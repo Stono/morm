@@ -1,20 +1,44 @@
-# morm [![Build Status](https://secure.travis-ci.org/karl/morm.png?branch=master)](http://travis-ci.org/karl/morm) [![Coverage Status](https://coveralls.io/repos/karl/morm/badge.png?branch=master)](https://coveralls.io/r/karl/morm?branch=master) [![Dependency Status](https://david-dm.org/karl/morm.svg)](https://david-dm.org/karl/morm)
-
+# morm
 A lightweight MSSQL orm for node.js
+Currently does no ORM!
+Very much under development
 
 ## Getting Started
-Install the module with: `npm install morm`
-
-```javascript
-var morm = new require('morm');
-morm.execute(); // "awesome"
-```
+Right now, you can't, it's not complete...
+When it's in a workable state - it'll go on npm.
 
 ## Documentation
-_(Coming soon)_
+See the tests for implemented stuff!! However below is an example of a simple insert.
+The nice thing about this is the library will bulk insert, rather than row by row.
 
 ## Examples
-_(Coming soon)_
+```javascript
+var config = {
+  user: 'example_user',
+  password: 'example_user_password',
+  server: '127.0.0.1',
+  database: 'example_database'
+};
+var dal = new Dal(config);
+
+var model = new Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+
+var row1 = model.create({
+  column1: 'col1',
+  column2: 'col2'
+});
+
+var row2 = model.create({
+  column1: 'hi',
+  column2: 'another row'
+});
+
+model.save();
+```
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
