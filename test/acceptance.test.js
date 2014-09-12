@@ -30,6 +30,7 @@ describe('Acceptance', function() {
       .then(function() {
         dal.execute('SELECT * FROM example_table')
           .then(function(rs) {
+            rs.length.should.eql(1);
             rs[0].column1.should.eql('col1');
             rs[0].column2.should.eql('col2');
             done();
