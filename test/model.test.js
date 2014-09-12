@@ -1,8 +1,10 @@
 'use strict';
 var Model = require('../lib/model');
 var should = require('should');
+var when = require('when');
+
 /*jshint -W068 */
-describe('morm model', function() {
+describe('morm Model', function() {
 
   it('Should initialise ok', function() {
     var model = new Model({
@@ -38,11 +40,11 @@ describe('morm model', function() {
   });
 
   it('Should be able to create an instance of my model with a single data object', function() {
-    var MyModel = new Model({
+    var myModel = new Model({
       table: 'morm_test',
       identity: 'id'
     });
-    var myObject = new MyModel({
+    var myObject = myModel.create({
       column1: 'hi', 
       column2: 'hi again'
     });
@@ -51,11 +53,11 @@ describe('morm model', function() {
   });
 
   it('Should say the model has been modified when it has', function() {
-    var MyModel = new Model({
+    var myModel = new Model({
       table: 'morm_test',
       identity: 'id'
     });
-    var myObject = new MyModel({
+    var myObject = myModel.create({
       column1: 'hi', 
       column2: 'hi again'
     });
@@ -65,15 +67,112 @@ describe('morm model', function() {
   });
 
   it('Should say the model hasnt been modified when it hasnt', function() {
-    var MyModel = new Model({
+    var myModel = new Model({
       table: 'morm_test',
       identity: 'id'
     });
-    var myObject = new MyModel({
+    var myObject = myModel.create({
       column1: 'hi', 
       column2: 'hi again'
     });
     myObject._meta.modified().should.eql(false);
+  });
+
+  describe('Sql generation', function() {
+    var executed = [];
+    var dal = {
+      execute: function(sql) {
+        return when.promise(function(resolve) {
+          executed.push(sql);
+          resolve();
+        });
+      }
+    };
+
+    beforeEach(function() {
+      executed = [];
+    });
+
+    it('Should build a single insert statement for a new model', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        executed.length.should.eql(1);
+        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+      }).then(done);
+    });
+
+    it('Should build an update statement for an existing modified model', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        id: 1,
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        executed.length.should.eql(1);
+        executed[0].should.match(/^UPDATE morm_test .*$/i);
+      }).then(done);
+    });
+
+    it('Should build a multiple insert statement when there are several models', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+      myModel.create({
+        column1: 'another hi', 
+        column2: 'to you'
+      });
+      myModel.save().then(function() {
+        executed.length.should.eql(1);
+        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\), \([^\(\)]*\)$/i);
+      }).then(done);
+
+    });
+
+    it('Should build a mixture of inserts and updates when applicable', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        id: 1,
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+      myModel.create({
+        column1: 'another hi', 
+        column2: 'to you'
+      });
+      myModel.save().then(function() {
+        executed.length.should.eql(2);
+        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+        executed[1].should.match(/^UPDATE morm_test .*$/i);
+      }).then(done);
+
+    });
+
+
   });
 
 });

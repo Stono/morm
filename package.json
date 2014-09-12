@@ -45,6 +45,7 @@
   "dependencies": {
     "lodash": "^2.4.1",
     "mssql": "^1.2.0",
-    "squel": "^3.8.1"
+    "squel": "^3.8.1",
+    "when": "^3.4.5"
   }
 }
