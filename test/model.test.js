@@ -110,6 +110,22 @@ describe('morm Model', function() {
       }).then(done);
     });
 
+    it('Should be flagged as an existing item after its been inserted', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      var item = myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        item._meta.existing.should.eql(true);
+      }).then(done);
+    });
+
     it('Should build an update statement for an existing modified model', function(done) {
       var myModel = new Model({
         table: 'morm_test',
