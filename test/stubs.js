@@ -7,7 +7,7 @@ var SqlLiteDal = function() {
 
   (function() {
     db.serialize(function() {
-      db.run('CREATE TABLE example_table (column1 TEXT, column2 TEXT)');
+      db.run('CREATE TABLE example_table (id INTEGER PRIMARY KEY ASC, column1 TEXT, column2 TEXT)');
     });
   })();
 
