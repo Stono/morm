@@ -120,6 +120,8 @@ describe('morm Model', function() {
         id: 1,
         column1: 'hi', 
         column2: 'hi again'
+      }, {
+        existing: true
       });
 
       myModel.save().then(function() {
@@ -159,6 +161,8 @@ describe('morm Model', function() {
         id: 1,
         column1: 'hi', 
         column2: 'hi again'
+      }, {
+        existing: true
       });
       myModel.create({
         column1: 'another hi', 

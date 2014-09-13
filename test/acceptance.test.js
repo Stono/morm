@@ -2,7 +2,7 @@
 var Dal = require('../lib/dal');
 var Model = require('../lib/model');
 
-describe('Acceptance', function() {
+describe.skip('Acceptance', function() {
   var config = {
     user: 'example_user',
     password: 'example_user_password',
