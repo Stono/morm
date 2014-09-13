@@ -17,13 +17,14 @@ describe('Acceptance', function() {
       identity: 'id',
       dal: dal
     });
-    model.create({
+    var item = model.create({
       column1: 'col1',
       column2: 'col2'
     });
 
     model.save()
       .then(function() {
+        item.id.should.not.eql(null);
         dal.execute('SELECT * FROM example_table')
           .then(function(rs) {
             rs.length.should.eql(1);

@@ -14,7 +14,7 @@ npm install morm
 See the tests for currently implemented stuff.
 
 ## Examples
-Insert a bunch of rows into a table.  This will do it as a single insert statement rather than a single row by row, which is nice.
+Insert a row into a table:
 ```javascript
 var config = {
   user: 'example_user',
@@ -33,11 +33,6 @@ var model = new Model({
 var row1 = model.create({
   column1: 'col1',
   column2: 'col2'
-});
-
-var row2 = model.create({
-  column1: 'hi',
-  column2: 'another row'
 });
 
 model.save();
