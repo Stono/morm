@@ -26,8 +26,18 @@ var SqlLiteDal = function() {
     });
   };
 
+  var getLastInsertedId = function() {
+    return when.promise(function(resolve) {
+      execute('SELECT last_insert_rowid()')
+        .then(function(rs) {
+          resolve(rs[0]['last_insert_rowid()']);
+        });
+    });
+  };
+
   return {
-    execute: execute
+    execute: execute,
+    getLastInsertedId: getLastInsertedId
   };
 };
 

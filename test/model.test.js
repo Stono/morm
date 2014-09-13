@@ -80,11 +80,18 @@ describe('morm Model', function() {
 
   describe('Sql generation', function() {
     var executed = [];
+    var autoid = 0;
     var dal = {
       execute: function(sql) {
         return when.promise(function(resolve) {
           executed.push(sql);
           resolve();
+        });
+      },
+      getLastInsertedId: function() {
+        return when.promise(function(resolve) {
+          autoid ++;
+          resolve(autoid);
         });
       }
     };
@@ -107,7 +114,8 @@ describe('morm Model', function() {
       myModel.save().then(function() {
         executed.length.should.eql(1);
         executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-      }).then(done);
+        done();
+      });
     });
 
     it('Should throw an error if a model is flagged for update but has no id', function() {
@@ -117,13 +125,14 @@ describe('morm Model', function() {
           identity: 'id',
           dal: dal
         });
-        model.create({
+        var item = model.create({
           column1: 'hi', 
           column2: 'hi again'
         }, {
           existing: true
         });
 
+        item.column1 = 'changed';
         model.save();
       }).should.throw('A model flagged for update must have an identifier set');
     });
@@ -141,10 +150,11 @@ describe('morm Model', function() {
 
       myModel.save().then(function() {
         item._meta.existing.should.eql(true);
-      }).then(done);
+        done();
+      });
     });
 
-    it.skip('Should set the id property on a model after an insert', function(done) {
+    it('Should set the id property on a model after an insert', function(done) {
       var myModel = new Model({
         table: 'morm_test',
         identity: 'id',
@@ -157,11 +167,11 @@ describe('morm Model', function() {
 
       myModel.save().then(function() {
         item.id.should.not.eql(null);
-      }).then(done);
+        done();
+      });
     });
 
-    // Not sure how i'm going to do this....
-    it.skip('Should set the id property on a model after multiple inserts', function(done) {
+    it('Should set the id property on a model after multiple inserts', function(done) {
       var myModel = new Model({
         table: 'morm_test',
         identity: 'id',
@@ -179,7 +189,8 @@ describe('morm Model', function() {
       myModel.save().then(function() {
         item.id.should.not.eql(null);
         item2.id.should.not.eql(null);
-      }).then(done);
+        done();
+      });
     });
 
     it('Should build an update statement for an existing modified model', function(done) {
@@ -188,7 +199,7 @@ describe('morm Model', function() {
         identity: 'id',
         dal: dal
       });
-      myModel.create({
+      var item = myModel.create({
         id: 1,
         column1: 'hi', 
         column2: 'hi again'
@@ -196,13 +207,16 @@ describe('morm Model', function() {
         existing: true
       });
 
+      item.column1 = 'updated';
       myModel.save().then(function() {
         executed.length.should.eql(1);
-        executed[0].should.match(/^UPDATE morm_test .* WHERE \(id = 1\).*/i);
-      }).then(done);
+        executed[0].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
+        done();
+      });
     });
 
-    it('Should build a multiple insert statement when there are several models', function(done) {
+    // This is skipped as we now insert one row at a time so that we can get the ID back
+    it.skip('Should build a multiple insert statement when there are several models', function(done) {
       var myModel = new Model({
         table: 'morm_test',
         identity: 'id',
@@ -219,7 +233,8 @@ describe('morm Model', function() {
       myModel.save().then(function() {
         executed.length.should.eql(1);
         executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\), \([^\(\)]*\)$/i);
-      }).then(done);
+        done();
+      });
 
     });
 
@@ -229,13 +244,15 @@ describe('morm Model', function() {
         identity: 'id',
         dal: dal
       });
-      myModel.create({
+      var updated = myModel.create({
         id: 1,
         column1: 'hi', 
         column2: 'hi again'
       }, {
         existing: true
       });
+      updated.column1 = 'updated';
+
       myModel.create({
         column1: 'another hi', 
         column2: 'to you'
@@ -243,9 +260,53 @@ describe('morm Model', function() {
       myModel.save().then(function() {
         executed.length.should.eql(2);
         executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-        executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = 1\).*/i);
-      }).then(done);
+        executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
+        done();
+      });
 
+    });
+
+    it('Should do an update after an insert of the same model', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      var item = myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        item.column2 = 'updated';
+        myModel.save().then(function() {
+          executed.length.should.eql(2);
+          executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+          executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
+          done();
+        });
+      });
+    });
+
+
+    it('Should not update a model that hasnt been modified', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        id: 1,
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        myModel.save().then(function() {
+          executed.length.should.eql(1);
+          done();
+        });
+      });
     });
 
 
