@@ -1,18 +1,14 @@
 'use strict';
-var Dal = require('../lib/dal');
+var Dal = require('./stubs').SqlLiteDal;
 var Model = require('../lib/model');
 
-describe.skip('Acceptance', function() {
-  var config = {
-    user: 'example_user',
-    password: 'example_user_password',
-    server: '172.19.104.11',
-    database: 'example_database'
-  };
-  var dal = new Dal(config);
+describe('Acceptance', function() {
+  var dal = new Dal();
 
   beforeEach(function(done) {
-    dal.execute('TRUNCATE TABLE example_table').then(done);
+    dal.execute('DELETE FROM example_table').then(function() {
+      done(); 
+    });
   });
 
   it('Should allow me to insert a row', function(done) {
