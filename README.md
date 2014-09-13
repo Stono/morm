@@ -73,6 +73,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.0 Stuck onto NPM just to get the ball rolling
  - 0.1.1 Fixed an issue with updates
  - 0.1.2 Huge fixes with the promises for sync operation of the insert and update tasks.
+ - 0.1.3 Implemented the mssql last inserted id lookup, starting to become an orm...
 
 ## License
 Copyright (c) 2014 Karl Stoney  
