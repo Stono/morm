@@ -85,7 +85,7 @@ var row2 = model.create({
   column2: 'col2'
 });
 
-model.save({ bulk: true});
+model.save({ bulk: true });
 ```
 
 ## Contributing
