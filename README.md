@@ -1,7 +1,7 @@
 # morm
 A lightweight MSSQL ORM for node.js
 
-Currently does no ORM!  It's more of a convenience facade for mssql with node, but that will change.
+Currently does no ORM!  It's more of a convenience facade for mssql with node, but that will change.  It is also currently WRITE ONLY.
 
 WARNING:  I strongly suggest against using this module right now - give it a week or two.  However if you insist, someone needs to check that getLastInsertedId() in lib/dal.js works with sql server!
 
@@ -19,6 +19,7 @@ See the tests for currently implemented stuff.
 
 ## Examples
 Insert a row into a table:
+After it's been inserted it is being "tracked" and you can subsequently modify it and re-save and an update will be performed.
 ```javascript
 var config = {
   user: 'example_user',
@@ -42,7 +43,7 @@ var row1 = model.create({
 model.save();
 ```
 
-This would allow you to update an existing row:
+This would allow you to update an existing object without first reading it from the database.
 ```javascript
 var model = new Model({
   table: 'example_table',
