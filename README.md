@@ -3,7 +3,7 @@ A lightweight MSSQL ORM for node.js
 
 Currently does no ORM!  It's more of a convenience facade for mssql with node, but that will change.
 
-Very much under development, use at your own whim!
+WARNING:  I strongly suggest against using this module right now - give it a week or two.  However if you insist, someone needs to check that getLastInsertedId() in lib/dal.js works with sql server!
 
 ## Getting Started
 ```javascript
