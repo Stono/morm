@@ -215,29 +215,6 @@ describe('morm Model', function() {
       });
     });
 
-    // This is skipped as we now insert one row at a time so that we can get the ID back
-    it.skip('Should build a multiple insert statement when there are several models', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-      myModel.create({
-        column1: 'another hi', 
-        column2: 'to you'
-      });
-      myModel.save().then(function() {
-        executed.length.should.eql(1);
-        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\), \([^\(\)]*\)$/i);
-        done();
-      });
-
-    });
-
     it('Should build a mixture of inserts and updates when applicable', function(done) {
       var myModel = new Model({
         table: 'morm_test',
@@ -288,7 +265,6 @@ describe('morm Model', function() {
       });
     });
 
-
     it('Should not update a model that hasnt been modified', function(done) {
       var myModel = new Model({
         table: 'morm_test',
@@ -306,6 +282,27 @@ describe('morm Model', function() {
           executed.length.should.eql(1);
           done();
         });
+      });
+    });
+
+    it('Should do a bulk insert if requested to do so', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+      myModel.create({
+        column1: 'hi 2', 
+        column2: 'hi again 2'
+      });
+
+      myModel.save({ bulk: true}).then(function() {
+        executed.length.should.eql(1);
+        done();
       });
     });
 

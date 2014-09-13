@@ -1,7 +1,7 @@
 # morm
 A lightweight MSSQL ORM for node.js
 
-Currently does no ORM!  It's more of a convenience facade for mssql with node, but that will change.  It is also currently WRITE ONLY.
+Well I use the term ORM lightly, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
 WARNING: This module is far from complete, i'd probably not use it if I were you.
 
@@ -64,6 +64,28 @@ var row1 = model.create({
 });
 
 model.save();
+```
+
+This will allow you to do a bulk insert of rows rather than individual update statements.  
+NOTE: By doing this you'll skip the post insert ID lookup which means you wont have tracking of these objects - but obviously its a lot faster.
+```javascript
+var model = new Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+
+var row1 = model.create({
+  column1: 'col1',
+  column2: 'col2'
+});
+
+var row2 = model.create({
+  column1: 'col1',
+  column2: 'col2'
+});
+
+model.save({ bulk: true});
 ```
 
 ## Contributing
