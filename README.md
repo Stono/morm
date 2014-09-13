@@ -67,6 +67,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
  - 0.1.0 Stuck onto NPM just to get the ball rolling
+ - 0.1.1 Fixed an issue with updates
 
 ## License
 Copyright (c) 2014 Karl Stoney  

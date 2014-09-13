@@ -110,6 +110,24 @@ describe('morm Model', function() {
       }).then(done);
     });
 
+    it('Should throw an error if a model is flagged for update but has no id', function() {
+      (function() {
+        var model = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        model.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        }, {
+          existing: true
+        });
+
+        model.save();
+      }).should.throw('A model flagged for update must have an identifier set');
+    });
+
     it('Should be flagged as an existing item after its been inserted', function(done) {
       var myModel = new Model({
         table: 'morm_test',
@@ -180,7 +198,7 @@ describe('morm Model', function() {
 
       myModel.save().then(function() {
         executed.length.should.eql(1);
-        executed[0].should.match(/^UPDATE morm_test .*$/i);
+        executed[0].should.match(/^UPDATE morm_test .* WHERE \(id = 1\).*/i);
       }).then(done);
     });
 
@@ -225,7 +243,7 @@ describe('morm Model', function() {
       myModel.save().then(function() {
         executed.length.should.eql(2);
         executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-        executed[1].should.match(/^UPDATE morm_test .*$/i);
+        executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = 1\).*/i);
       }).then(done);
 
     });
