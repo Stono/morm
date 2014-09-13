@@ -126,6 +126,44 @@ describe('morm Model', function() {
       }).then(done);
     });
 
+    it.skip('Should set the id property on a model after an insert', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      var item = myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        item.id.should.not.eql(null);
+      }).then(done);
+    });
+
+    // Not sure how i'm going to do this....
+    it.skip('Should set the id property on a model after multiple inserts', function(done) {
+      var myModel = new Model({
+        table: 'morm_test',
+        identity: 'id',
+        dal: dal
+      });
+      var item = myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+      var item2 = myModel.create({
+        column1: 'hi', 
+        column2: 'hi again'
+      });
+
+      myModel.save().then(function() {
+        item.id.should.not.eql(null);
+        item2.id.should.not.eql(null);
+      }).then(done);
+    });
+
     it('Should build an update statement for an existing modified model', function(done) {
       var myModel = new Model({
         table: 'morm_test',
