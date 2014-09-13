@@ -5,6 +5,10 @@ Currently does no ORM!  It's more of a convenience facade for mssql with node, b
 
 WARNING:  I strongly suggest against using this module right now - give it a week or two.  However if you insist, someone needs to check that getLastInsertedId() in lib/dal.js works with sql server!
 
+## TODO
+ - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead.
+ - Implement a model.save({bulk: true}) which will do a bulk insert rather than a row by row returning the ID.  Ultimately the models wouldnt then be controllable in an ORM manner but that is fine for some situations.
+
 ## Getting Started
 ```javascript
 npm install morm
@@ -63,6 +67,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## Release History
  - 0.1.0 Stuck onto NPM just to get the ball rolling
  - 0.1.1 Fixed an issue with updates
+ - 0.1.2 Huge fixes with the promises for sync operation of the insert and update tasks.
 
 ## License
 Copyright (c) 2014 Karl Stoney  
