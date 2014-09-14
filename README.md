@@ -3,10 +3,13 @@ A lightweight MSSQL ORM for node.js
 
 Well I use the term ORM lightly, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
-WARNING: This module is far from complete, i'd probably not use it if I were you.
+WARNING: This module is far from complete, i'd probably not use it if I were you.  However if you do use it, please feel free to submit issues or even contribute yourself.
 
 ## TODO
- - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that
+ - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that.  But hey, it works.
+ - Implemented querying of models to return ORM tracked objects.
+ - One to Many / Many to Many relationships etc.
+ - Change the way we're using sqlite for the tests - as we're not actually testing lib/dal in any way.
 
 ## Getting Started
 ```javascript
