@@ -111,6 +111,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.2 Huge fixes with the promises for sync operation of the insert and update tasks.
  - 0.1.3 Implemented the mssql last inserted id lookup, starting to become an orm...
  - 0.1.4 Implemented bulk inserts
+ - 0.1.5 Cleaning up and performance improvements in the model.
 
 ## License
 Copyright (c) 2014 Karl Stoney  
