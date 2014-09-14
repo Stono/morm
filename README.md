@@ -27,6 +27,18 @@ var config = {
   server: '127.0.0.1',
   database: 'example_database'
 };
+
+// Or if you're using Sql Azure:
+var config = {
+  user: 'example_user',
+  password: 'example_user_password',
+  server: '127.0.0.1',
+  database: 'example_database',
+  options: {
+    encrypt: true
+  }
+};
+
 var dal = new morm.Dal(config);
 
 var model = new morm.Model({
@@ -48,13 +60,13 @@ model.save()
 
 This would allow you to update an existing object without first reading it from the database.
 ```javascript
-var model = new Model({
+var model = new morm.Model({
   table: 'example_table',
   identity: 'id',
   dal: dal
 });
 
-var row1 = model.create({
+model.create({
   id: 1,
   column1: 'col1',
   column2: 'col2'
@@ -68,18 +80,18 @@ model.save();
 This will allow you to do a bulk insert of rows rather than individual update statements.  
 NOTE: By doing this you'll skip the post insert ID lookup which means you wont have tracking of these objects - but obviously its a lot faster.
 ```javascript
-var model = new Model({
+var model = new morm.Model({
   table: 'example_table',
   identity: 'id',
   dal: dal
 });
 
-var row1 = model.create({
+model.create({
   column1: 'col1',
   column2: 'col2'
 });
 
-var row2 = model.create({
+model.create({
   column1: 'col1',
   column2: 'col2'
 });
