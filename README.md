@@ -1,7 +1,7 @@
 # morm
 A lightweight MSSQL ORM for node.js
 
-Well I use the term ORM lightly, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
+Well I use the term ORM loosely, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
 WARNING: This module is far from complete, i'd probably not use it if I were you.  However if you do use it, please feel free to submit issues or even contribute yourself.
 
