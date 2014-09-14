@@ -7,7 +7,6 @@ WARNING: This module is far from complete, i'd probably not use it if I were you
 
 ## TODO
  - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that
- - Implement a model.save({bulk: true}) which will do a bulk insert rather than a row by row returning the ID.  Ultimately the models wouldnt then be controllable in an ORM manner but that is fine for some situations.
 
 ## Getting Started
 ```javascript
