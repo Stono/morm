@@ -1,14 +1,14 @@
 'use strict';
 var Model = require('../lib/model');
 var should = require('should');
-var when = require('when');
+var Stubs = require('./stubs');
 
 /*jshint -W068 */
 describe('morm Model', function() {
 
   it('Should initialise ok', function() {
     var model = new Model({
-      table: 'morm_test',
+      table: 'example_table',
       identity: 'id'
     });
     model.should.not.eql(null);
@@ -24,7 +24,7 @@ describe('morm Model', function() {
   it('Should require the id parameter', function() {
     (function() {
       var model = new Model({
-        table: 'morm_test'
+        table: 'example_table'
       });
       should(model).eql(null);
     }).should.throw('You must initialise a model with the id option');
@@ -41,7 +41,7 @@ describe('morm Model', function() {
 
   it('Should be able to create an instance of my model with a single data object', function() {
     var myModel = new Model({
-      table: 'morm_test',
+      table: 'example_table',
       identity: 'id'
     });
     var myObject = myModel.create({
@@ -54,7 +54,7 @@ describe('morm Model', function() {
 
   it('Should say the model has been modified when it has', function() {
     var myModel = new Model({
-      table: 'morm_test',
+      table: 'example_table',
       identity: 'id'
     });
     var myObject = myModel.create({
@@ -68,7 +68,7 @@ describe('morm Model', function() {
 
   it('Should say the model hasnt been modified when it hasnt', function() {
     var myModel = new Model({
-      table: 'morm_test',
+      table: 'example_table',
       identity: 'id'
     });
     var myObject = myModel.create({
@@ -79,43 +79,9 @@ describe('morm Model', function() {
   });
 
   describe('Sql generation', function() {
-    var executed = [];
-    var autoid = 0;
-    var dal = {
-      execute: function(sql) {
-        return when.promise(function(resolve) {
-          executed.push(sql);
-          resolve();
-        });
-      },
-      getLastInsertedId: function() {
-        return when.promise(function(resolve) {
-          autoid ++;
-          resolve(autoid);
-        });
-      }
-    };
-
+    var dal;
     beforeEach(function() {
-      executed = [];
-    });
-
-    it('Should build a single insert statement for a new model', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-
-      myModel.save().then(function() {
-        executed.length.should.eql(1);
-        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-        done();
-      });
+      dal = new Stubs.SqlLiteDal();
     });
 
     it('Should throw an error if a model is flagged for update but has no id', function() {
@@ -137,175 +103,201 @@ describe('morm Model', function() {
       }).should.throw('A model flagged for update must have an identifier set');
     });
 
-    it('Should be flagged as an existing item after its been inserted', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var item = myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
+    describe('Inserting', function() {
+      it('Should build a single insert statement for a new model', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
 
-      myModel.save().then(function() {
-        item._meta.existing.should.eql(true);
-        done();
-      });
-    });
-
-    it('Should set the id property on a model after an insert', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var item = myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-
-      myModel.save().then(function() {
-        item.id.should.not.eql(null);
-        done();
-      });
-    });
-
-    it('Should set the id property on a model after multiple inserts', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var item = myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-      var item2 = myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-
-      myModel.save().then(function() {
-        item.id.should.not.eql(null);
-        item2.id.should.not.eql(null);
-        done();
-      });
-    });
-
-    it('Should build an update statement for an existing modified model', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var item = myModel.create({
-        id: 1,
-        column1: 'hi', 
-        column2: 'hi again'
-      }, {
-        existing: true
-      });
-
-      item.column1 = 'updated';
-      myModel.save().then(function() {
-        executed.length.should.eql(1);
-        executed[0].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
-        done();
-      });
-    });
-
-    it('Should build a mixture of inserts and updates when applicable', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var updated = myModel.create({
-        id: 1,
-        column1: 'hi', 
-        column2: 'hi again'
-      }, {
-        existing: true
-      });
-      updated.column1 = 'updated';
-
-      myModel.create({
-        column1: 'another hi', 
-        column2: 'to you'
-      });
-      myModel.save().then(function() {
-        executed.length.should.eql(2);
-        executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-        executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
-        done();
-      });
-
-    });
-
-    it('Should do an update after an insert of the same model', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      var item = myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-
-      myModel.save().then(function() {
-        item.column2 = 'updated';
         myModel.save().then(function() {
-          executed.length.should.eql(2);
-          executed[0].should.match(/^INSERT INTO morm_test \(column1, column2\) VALUES \([^\(\)]*\)$/i);
-          executed[1].should.match(/^UPDATE morm_test .* WHERE \(id = .*/i);
+          dal.executed.length.should.eql(2);
+          dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+          dal.executed[1].should.match(/^SELECT last_insert_row().*$/i);
+          done();
+        });
+      });
+
+      it('Should be flagged as an existing item after its been inserted', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var item = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+
+        myModel.save().then(function() {
+          item._meta.existing.should.eql(true);
+          done();
+        });
+      });
+
+      it('Should set the id property on a model after an insert', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var item = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+
+        myModel.save().then(function() {
+          item.id.should.not.eql(null);
+          done();
+        });
+      });
+
+      it('Should set the id property on a model after multiple inserts', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var item = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+        var item2 = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+
+        myModel.save().then(function() {
+          item.id.should.not.eql(null);
+          item2.id.should.not.eql(null);
+          done();
+        });
+      });
+
+      it('Should do a bulk insert if requested to do so', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+        myModel.create({
+          column1: 'hi 2', 
+          column2: 'hi again 2'
+        });
+
+        myModel.save({ bulk: true}).then(function() {
+          dal.executed.length.should.eql(1);
+          dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\), \([^\(\)]*\)$/i);
           done();
         });
       });
     });
 
-    it('Should not update a model that hasnt been modified', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      myModel.create({
-        id: 1,
-        column1: 'hi', 
-        column2: 'hi again'
-      });
+    describe('Updating', function() {
+      it('Should build an update statement for an existing modified model', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var item = myModel.create({
+          id: 1,
+          column1: 'hi', 
+          column2: 'hi again'
+        }, {
+          existing: true
+        });
 
-      myModel.save().then(function() {
+        item.column1 = 'updated';
         myModel.save().then(function() {
-          executed.length.should.eql(1);
+          dal.executed.length.should.eql(1);
+          dal.executed[0].should.match(/^UPDATE example_table .* WHERE \(id = .*/i);
           done();
         });
       });
+
+      it('Should build a mixture of inserts and updates when applicable', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var updated = myModel.create({
+          id: 1,
+          column1: 'hi', 
+          column2: 'hi again'
+        }, {
+          existing: true
+        });
+        updated.column1 = 'updated';
+
+        myModel.create({
+          column1: 'another hi', 
+          column2: 'to you'
+        });
+        myModel.save().then(function() {
+          dal.executed.length.should.eql(3);
+          dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+          dal.executed[1].should.match(/^SELECT last_insert_row().*$/i);
+          dal.executed[2].should.match(/^UPDATE example_table .* WHERE \(id = .*/i);
+          done();
+        });
+      });
+
+      it('Should do an update after an insert of the same model', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var item = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+
+        myModel.save().then(function() {
+          item.column2 = 'updated';
+          myModel.save().then(function() {
+            dal.executed.length.should.eql(3);
+            dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+            dal.executed[1].should.match(/^SELECT last_insert_row().*$/i);
+            dal.executed[2].should.match(/^UPDATE example_table .* WHERE \(id = .*/i);
+            done();
+          });
+        });
+      });
+
+      it('Should not update a model that hasnt been modified', function(done) {
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        myModel.create({
+          id: 1,
+          column1: 'hi', 
+          column2: 'hi again'
+        });
+
+        myModel.save().then(function() {
+          myModel.save().then(function() {
+            dal.executed.length.should.eql(2);
+            dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\)$/i);
+            dal.executed[1].should.match(/^SELECT last_insert_row().*$/i);
+            done();
+          });
+        });
+      });
     });
-
-    it('Should do a bulk insert if requested to do so', function(done) {
-      var myModel = new Model({
-        table: 'morm_test',
-        identity: 'id',
-        dal: dal
-      });
-      myModel.create({
-        column1: 'hi', 
-        column2: 'hi again'
-      });
-      myModel.create({
-        column1: 'hi 2', 
-        column2: 'hi again 2'
-      });
-
-      myModel.save({ bulk: true}).then(function() {
-        executed.length.should.eql(1);
-        done();
-      });
-    });
-
 
   });
 
