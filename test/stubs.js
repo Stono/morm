@@ -4,6 +4,7 @@ var sqlite3 = require('sqlite3').verbose();
 
 var SqlLiteDal = function() {
   var db = new sqlite3.Database(':memory:');
+  var executed = [];
 
   (function() {
     db.serialize(function() {
@@ -15,6 +16,7 @@ var SqlLiteDal = function() {
     return when.promise(function(resolve, reject) {
       db.serialize(function() {
         db.all(sql, function(err, rows) {
+          executed.push(sql);
           if(err) {
             reject(err);
             return;
@@ -37,6 +39,7 @@ var SqlLiteDal = function() {
 
   return {
     execute: execute,
+    executed: executed,
     getLastInsertedId: getLastInsertedId
   };
 };

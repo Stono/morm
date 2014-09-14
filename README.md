@@ -3,11 +3,13 @@ A lightweight MSSQL ORM for node.js
 
 Well I use the term ORM lightly, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
-WARNING: This module is far from complete, i'd probably not use it if I were you.
+WARNING: This module is far from complete, i'd probably not use it if I were you.  However if you do use it, please feel free to submit issues or even contribute yourself.
 
 ## TODO
- - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that
- - Implement a model.save({bulk: true}) which will do a bulk insert rather than a row by row returning the ID.  Ultimately the models wouldnt then be controllable in an ORM manner but that is fine for some situations.
+ - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that.  But hey, it works.
+ - Implemented querying of models to return ORM tracked objects.
+ - One to Many / Many to Many relationships etc.
+ - Change the way we're using sqlite for the tests - as we're not actually testing lib/dal in any way.
 
 ## Getting Started
 ```javascript
@@ -28,6 +30,18 @@ var config = {
   server: '127.0.0.1',
   database: 'example_database'
 };
+
+// Or if you're using Sql Azure:
+var config = {
+  user: 'example_user',
+  password: 'example_user_password',
+  server: '127.0.0.1',
+  database: 'example_database',
+  options: {
+    encrypt: true
+  }
+};
+
 var dal = new morm.Dal(config);
 
 var model = new morm.Model({
@@ -49,13 +63,13 @@ model.save()
 
 This would allow you to update an existing object without first reading it from the database.
 ```javascript
-var model = new Model({
+var model = new morm.Model({
   table: 'example_table',
   identity: 'id',
   dal: dal
 });
 
-var row1 = model.create({
+model.create({
   id: 1,
   column1: 'col1',
   column2: 'col2'
@@ -69,18 +83,18 @@ model.save();
 This will allow you to do a bulk insert of rows rather than individual update statements.  
 NOTE: By doing this you'll skip the post insert ID lookup which means you wont have tracking of these objects - but obviously its a lot faster.
 ```javascript
-var model = new Model({
+var model = new morm.Model({
   table: 'example_table',
   identity: 'id',
   dal: dal
 });
 
-var row1 = model.create({
+model.create({
   column1: 'col1',
   column2: 'col2'
 });
 
-var row2 = model.create({
+model.create({
   column1: 'col1',
   column2: 'col2'
 });
@@ -97,6 +111,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.2 Huge fixes with the promises for sync operation of the insert and update tasks.
  - 0.1.3 Implemented the mssql last inserted id lookup, starting to become an orm...
  - 0.1.4 Implemented bulk inserts
+ - 0.1.5 Cleaning up and performance improvements in the model.
 
 ## License
 Copyright (c) 2014 Karl Stoney  
