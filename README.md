@@ -20,6 +20,8 @@ npm install morm
 See the tests for currently implemented stuff.
 
 ## Examples
+
+### ORM Operations
 Insert a row into a table:
 After it's been inserted it is being "tracked" and you can subsequently modify it and re-save and an update will be performed.
 ```javascript
@@ -79,29 +81,6 @@ model.create({
 
 model.save();
 ```
-
-This will allow you to do a bulk insert of rows rather than individual update statements.  
-NOTE: By doing this you'll skip the post insert ID lookup which means you wont have tracking of these objects - but obviously its a lot faster.
-```javascript
-var model = new morm.Model({
-  table: 'example_table',
-  identity: 'id',
-  dal: dal
-});
-
-model.create({
-  column1: 'col1',
-  column2: 'col2'
-});
-
-model.create({
-  column1: 'col1',
-  column2: 'col2'
-});
-
-model.save({ bulk: true });
-```
-
 This will allow you to read a bunch of objects and return tracked instances of them which can be modified and updated.  Please note the syntax here is using [squel]https://github.com/hiddentao/squel as that's what i'm using under the hood to generate the SQL.
 ```javascript
 var model = new morm.Model({
@@ -135,6 +114,45 @@ model.delete()
 
 ```
 
+### Bulk Operations
+This will allow you to do a bulk insert of rows rather than individual update statements.  
+NOTE: By doing this you'll skip the post insert ID lookup which means you wont have tracking of these objects - but obviously its a lot faster.
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+
+model.create({
+  column1: 'col1',
+  column2: 'col2'
+});
+
+model.create({
+  column1: 'col1',
+  column2: 'col2'
+});
+
+model.save({ bulk: true });
+```
+
+This will allow you to return a raw list of objects, untracked (ie no meta data attached).
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+
+model.select({ bulk: true })
+  .where('id > 1')
+  .where('id < 10')
+.then(function(results) {
+  console.log(results);
+});
+```
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
@@ -147,6 +165,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.5 Cleaning up and performance improvements in the model.
  - 0.1.6 Added read and delete.
  - 0.1.8 Bug fixes.
+ - 0.1.9 Added bulk reads.
 
 ## License
 Copyright (c) 2014 Karl Stoney  
