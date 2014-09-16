@@ -200,6 +200,7 @@ describe('morm Model', function() {
         myModel.save({ bulk: true}).then(function() {
           dal.executed.length.should.eql(1);
           dal.executed[0].should.match(/^INSERT INTO example_table \(column1, column2\) VALUES \([^\(\)]*\), \([^\(\)]*\)$/i);
+          myModel.trackedItems().should.eql(0);
           done();
         });
       });
