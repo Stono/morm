@@ -114,8 +114,25 @@ model.select()
   .where('id < 10')
   .go()
   .then(function(results) {
-     console.log(results);
-   });
+    console.log(results);
+  });
+```
+
+This will allow you to delete a bunch of objects.
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+model.delete()
+  .where('id > 1')
+  .where('id < 10')
+  .go()
+  .then(function() {
+    console.log('done!');
+  });
+
 ```
 
 ## Contributing
