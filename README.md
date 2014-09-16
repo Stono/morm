@@ -167,6 +167,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.8 Bug fixes.
  - 0.1.9 Added bulk reads.
  - 0.1.10 Bug fixes.
+ - 0.1.11 Bulk inserted items are removed from tracking array.
 
 ## License
 Copyright (c) 2014 Karl Stoney  
