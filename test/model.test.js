@@ -324,36 +324,11 @@ describe('morm Model', function() {
               dal.executed[2].should.match(/^SELECT \* FROM example_table WHERE.*$/i);
               results.length.should.eql(1);
               results[0].column2.should.eql('hi again - just inserted');
-              done();
             });
+          done();
         });
       });
 
-      it('toString on the objet should strip the meta data', function(done) {
-
-        var myModel = new Model({
-          table: 'example_table',
-          identity: 'id',
-          dal: dal
-        });
-        var model = myModel.create({
-          column1: 'hi', 
-          column2: 'hi again'
-        });
-
-        myModel.save().then(function() {
-          myModel.clear();
-          myModel.select()
-            .where('id = \'' + model.id + '\'')
-            .go()
-            .then(function(results) {
-              console.log(results.toString());
-              done();
-            });
-        });
-      });
-
-    
       it('Should return a list of untracked objects if requested', function(done) {
 
         var myModel = new Model({
@@ -376,8 +351,8 @@ describe('morm Model', function() {
               results.length.should.eql(1);
               results[0].should.not.have.property('_meta');
               results[0].column2.should.eql('hi again - just inserted');
-              done();
             });
+          done();
         });
       });
     });
