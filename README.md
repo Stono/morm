@@ -102,6 +102,22 @@ model.create({
 model.save({ bulk: true });
 ```
 
+This will allow you to read a bunch of objects and return tracked instances of them which can be modified and updated.  Please note the syntax here is using [squel]https://github.com/hiddentao/squel as that's what i'm using under the hood to generate the SQL.
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+model.select()
+  .where('id > 1')
+  .where('id < 10')
+  .go()
+  .then(function(results) {
+     console.log(results);
+   });
+```
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 

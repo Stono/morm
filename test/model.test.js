@@ -299,6 +299,34 @@ describe('morm Model', function() {
       });
     });
 
+    describe('Reading', function() {
+      it('Should build a valid query statement', function(done) {
+
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var model = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again - just inserted'
+        });
+
+        myModel.save().then(function() {
+          myModel.clear();
+          myModel.select()
+            .where('id = \'' + model.id + '\'')
+            .go()
+            .then(function(results) {
+              results.length.should.eql(1);
+              results[0].column2.should.eql('hi again - just inserted');
+            });
+          done();
+        });
+      });
+
+    });
+
   });
 
 });
