@@ -1,7 +1,7 @@
 # morm
 A lightweight MSSQL ORM for node.js
 
-Well I use the term ORM lightly, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
+Well I use the term ORM loosely, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
 WARNING: This module is far from complete, i'd probably not use it if I were you.  However if you do use it, please feel free to submit issues or even contribute yourself.
 
@@ -102,6 +102,39 @@ model.create({
 model.save({ bulk: true });
 ```
 
+This will allow you to read a bunch of objects and return tracked instances of them which can be modified and updated.  Please note the syntax here is using [squel]https://github.com/hiddentao/squel as that's what i'm using under the hood to generate the SQL.
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+model.select()
+  .where('id > 1')
+  .where('id < 10')
+  .go()
+  .then(function(results) {
+    console.log(results);
+  });
+```
+
+This will allow you to delete a bunch of objects.
+```javascript
+var model = new morm.Model({
+  table: 'example_table',
+  identity: 'id',
+  dal: dal
+});
+model.delete()
+  .where('id > 1')
+  .where('id < 10')
+  .go()
+  .then(function() {
+    console.log('done!');
+  });
+
+```
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
@@ -112,6 +145,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.3 Implemented the mssql last inserted id lookup, starting to become an orm...
  - 0.1.4 Implemented bulk inserts
  - 0.1.5 Cleaning up and performance improvements in the model.
+ - 0.1.6 Added read and delete.
 
 ## License
 Copyright (c) 2014 Karl Stoney  

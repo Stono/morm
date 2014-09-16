@@ -80,8 +80,11 @@ describe('morm Model', function() {
 
   describe('Sql generation', function() {
     var dal;
-    beforeEach(function() {
-      dal = new Stubs.SqlLiteDal();
+    beforeEach(function(done) {
+      setTimeout(function() {
+        dal = new Stubs.SqlLiteDal();
+        done();
+      }, 50);
     });
 
     it('Should throw an error if a model is flagged for update but has no id', function() {
@@ -295,6 +298,66 @@ describe('morm Model', function() {
             dal.executed[1].should.match(/^SELECT last_insert_row().*$/i);
             done();
           });
+        });
+      });
+    });
+
+    describe('Reading', function() {
+      it('Should build a valid query statement', function(done) {
+
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var model = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again - just inserted'
+        });
+
+        myModel.save().then(function() {
+          myModel.clear();
+          myModel.select()
+            .where('id = \'' + model.id + '\'')
+            .go()
+            .then(function(results) {
+              dal.executed[2].should.match(/^SELECT \* FROM example_table WHERE.*$/i);
+              results.length.should.eql(1);
+              results[0].column2.should.eql('hi again - just inserted');
+            });
+          done();
+        });
+      });
+    });
+
+    describe('Deleting' , function() {
+      it('Should build a valid delete statement', function(done) {
+
+        var myModel = new Model({
+          table: 'example_table',
+          identity: 'id',
+          dal: dal
+        });
+        var model = myModel.create({
+          column1: 'hi', 
+          column2: 'hi again - just inserted'
+        });
+
+        myModel.save().then(function() {
+          myModel.clear();
+          myModel.delete()
+            .where('id = \'' + model.id + '\'')
+            .go()
+            .then(function() {
+              dal.executed[2].should.match(/^DELETE FROM example_table WHERE .*$/i);
+              myModel.select()
+                .where('id = \'' + model.id + '\'')
+                .go()
+                .then(function(results) {
+                  results.length.should.eql(0);
+                  done();
+                });
+            });
         });
       });
     });
