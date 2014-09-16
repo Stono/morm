@@ -146,7 +146,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.4 Implemented bulk inserts
  - 0.1.5 Cleaning up and performance improvements in the model.
  - 0.1.6 Added read and delete.
- - 0.1.7 Added read and delete.
+ - 0.1.8 Bug fixes.
 
 ## License
 Copyright (c) 2014 Karl Stoney  

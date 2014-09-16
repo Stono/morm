@@ -1,7 +1,7 @@
 {
   "name": "morm",
   "description": "A lightweight MSSQL orm for node.js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "homepage": "https://github.com/Stono/morm",
   "author": {
     "name": "Karl Stoney",
