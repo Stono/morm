@@ -286,7 +286,6 @@ describe('morm Model', function() {
           dal: dal
         });
         myModel.create({
-          id: 1,
           column1: 'hi', 
           column2: 'hi again'
         });
