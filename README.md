@@ -8,7 +8,6 @@ WARNING: This module is far from complete, i'd probably not use it if I were you
 
 ## TODO
  - Need to improve how I return the identity from an insert statement in SQL.. it all feels a bit hacky right now and I should be using @@IDENTITY instead - just makes it harder to test as sql lite doesnt support that.  But hey, it works.
- - Implemented querying of models to return ORM tracked objects.
  - One to Many / Many to Many relationships etc.
  - Change the way we're using sqlite for the tests - as we're not actually testing lib/dal in any way.
 
