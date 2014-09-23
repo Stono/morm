@@ -1,5 +1,6 @@
 # morm
-A lightweight MSSQL ORM for node.js
+A lightweight SQL ORM for node.js.
+Currently supports MSSQL and SqlLite3
 
 Well I use the term ORM loosely, it's currently more of a facade which makes interacting with MSSQL from node a little less painful.  More ORM features are coming soon - but for now check the tests for implemented stuff.
 
@@ -32,6 +33,7 @@ var config = {
   server: '127.0.0.1',
   database: 'example_database'
 };
+var dal = new morm.Dal(config);
 
 // Or if you're using Sql Azure:
 var config = {
@@ -43,8 +45,10 @@ var config = {
     encrypt: true
   }
 };
-
 var dal = new morm.Dal(config);
+
+// Or if you're using SqlLite3
+var dal = new morm.Dal(':memory:', 'sqlite3');
 
 var model = new morm.Model({
   table: 'example_table',
@@ -168,6 +172,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
  - 0.1.9 Added bulk reads.
  - 0.1.10 Bug fixes.
  - 0.1.11 Bulk inserted items are removed from tracking array.
+ - 0.1.12 Enabled Sqlite3 as a valid Dal
 
 ## License
 Copyright (c) 2014 Karl Stoney  

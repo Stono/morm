@@ -1,5 +1,5 @@
 'use strict';
-var Dal = require('./stubs').SqlLiteDal;
+var Dal = require('./stubs').LoggingDal;
 var Model = require('../lib/model');
 
 describe('Acceptance', function() {

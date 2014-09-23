@@ -1,40 +1,22 @@
 'use strict';
-var when = require('when');
-var sqlite3 = require('sqlite3').verbose();
+var Dal = require('../lib/dal');
 
-var SqlLiteDal = function() {
-  var db = new sqlite3.Database(':memory:');
+var LoggingDal = function() {
+  var db = new Dal(':memory:', 'sqlite3');
   var executed = [];
 
   (function() {
-    db.serialize(function() {
-      db.run('CREATE TABLE example_table (id INTEGER PRIMARY KEY ASC, column1 TEXT, column2 TEXT)');
-    });
+      db.execute('CREATE TABLE example_table (id INTEGER PRIMARY KEY ASC, column1 TEXT, column2 TEXT)');
   })();
 
   var execute = function(sql) {
-    return when.promise(function(resolve, reject) {
-      db.serialize(function() {
-        db.all(sql, function(err, rows) {
-          executed.push(sql);
-          if(err) {
-            reject(err);
-            return;
-          } else {
-            resolve(rows);
-          }
-        }); 
-      });
-    });
+    executed.push(sql);
+    return db.execute(sql);
   };
 
   var getLastInsertedId = function() {
-    return when.promise(function(resolve) {
-      execute('SELECT last_insert_rowid()')
-        .then(function(rs) {
-          resolve(rs[0]['last_insert_rowid()']);
-        });
-    });
+    executed.push('SELECT last_insert_row()');
+    return db.getLastInsertedId();
   };
 
   return {
@@ -45,5 +27,5 @@ var SqlLiteDal = function() {
 };
 
 module.exports = {
-  SqlLiteDal: SqlLiteDal
+  LoggingDal: LoggingDal
 };

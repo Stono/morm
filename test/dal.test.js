@@ -1,5 +1,5 @@
 'use strict';
-var Dal = require('./stubs').SqlLiteDal;
+var Dal = require('./stubs').LoggingDal;
 var should = require('should');
 
 describe('Data Access', function() {

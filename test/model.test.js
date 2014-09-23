@@ -82,7 +82,7 @@ describe('morm Model', function() {
     var dal;
     beforeEach(function(done) {
       setTimeout(function() {
-        dal = new Stubs.SqlLiteDal();
+        dal = new Stubs.LoggingDal();
         done();
       }, 50);
     });
