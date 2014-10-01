@@ -1,3 +1,5 @@
+# This module should no longer be used, see https://github.com/Stono/osql instead
+
 # morm
 A lightweight SQL ORM for node.js.
 Currently supports MSSQL and SqlLite3
